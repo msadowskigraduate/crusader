@@ -1,0 +1,33 @@
+
+# Stage 1: Build the app
+FROM node:20-alpine AS builder
+
+# Set workdir
+WORKDIR /app
+
+COPY . .
+
+# Install dependencies (includes dev dependencies for build)
+RUN npm install
+
+# Build only the seed app
+RUN npx nx build seed
+
+# ----------------------------------------
+
+# Stage 2: Create a slim runtime image
+FROM node:20-alpine AS runner
+
+# Set workdir in the runtime container
+WORKDIR /app
+
+# Copy only the production node_modules
+COPY --from=builder /app/node_modules ./node_modules
+
+# Copy the built app only (not full source)
+COPY --from=builder /app/apps/seed/dist ./dist
+COPY --from=builder /app/apps/seed/src/assets/*.csv ./assets/
+
+# Start the script
+CMD ["node", "dist/main.js"]
+

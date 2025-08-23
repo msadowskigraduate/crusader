@@ -1,0 +1,34 @@
+services:
+  # PostgreSQL Database Service
+  db:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_DB: crusader
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432' # Expose db port for local debugging if needed
+    volumes:
+      - ./apps/seed/src/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d crusader']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  seed:
+    build:
+      context: .
+      dockerfile: Dockerfile.seed # A separate Dockerfile for the seed script
+    environment:
+      - PGHOST=db
+      - PGUSER=postgres
+      - PGPASSWORD=postgres
+      - POSTGRES_DB=crusader
+      - PGPORT=5432
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  postgres_data:

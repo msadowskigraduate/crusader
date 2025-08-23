@@ -63,6 +63,11 @@
   "targetDefaults": {
     "test": {
       "dependsOn": ["^build"]
+    },
+    "@nx/esbuild:esbuild": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   },
   "generators": {
@@ -70,6 +75,13 @@
       "application": {
         "style": "tailwind",
         "linter": "eslint"
+      }
+    }
+  },
+  "release": {
+    "changelog": {
+      "projectChangelogs": {
+        "createRelease": "github"
       }
     }
   }

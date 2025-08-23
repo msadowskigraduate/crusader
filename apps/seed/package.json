@@ -1,0 +1,73 @@
+{
+  "name": "@crusader/seed",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "targets": {
+      "build": {
+        "executor": "@nx/esbuild:esbuild",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "defaultConfiguration": "production",
+        "options": {
+          "platform": "node",
+          "outputPath": "apps/seed/dist",
+          "format": [
+            "cjs"
+          ],
+          "bundle": false,
+          "main": "apps/seed/src/main.ts",
+          "tsConfig": "apps/seed/tsconfig.app.json",
+          "assets": [
+            "apps/seed/src/assets"
+          ],
+          "esbuildOptions": {
+            "sourcemap": true,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        },
+        "configurations": {
+          "development": {},
+          "production": {
+            "esbuildOptions": {
+              "sourcemap": false,
+              "outExtension": {
+                ".js": ".js"
+              }
+            }
+          }
+        }
+      },
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "@crusader/seed:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "@crusader/seed:build:development"
+          },
+          "production": {
+            "buildTarget": "@crusader/seed:build:production"
+          }
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "csv-parser": "^3.2.0",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.5"
+  }
+}
