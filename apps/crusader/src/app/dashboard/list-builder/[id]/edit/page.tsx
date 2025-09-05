@@ -1,32 +1,29 @@
-import { use } from "react";
-
-export async function generateMetadata({
-	params,
-}: {
-	params: { slug: string };
-}) {
-	return {
-		title: "Crusader - Edit Order of Battle",
-	};
-}
+'use client';
+import { Unit } from '@/app/lib/definitions';
+import UnitPicker from '@/components/list-builder/units/unit-picker-list';
+import OrderOfBattleBuilder from '@/components/order-of-battle/order-of-battle-editor';
+import { use, useState } from 'react';
 
 export default function EditListBuilderPage({
-	params,
+  params,
 }: {
-	params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>;
 }) {
-	const { id } = use(params);
-	return (
-		<div>
-			<p className="text-5xl font-bold mb-4 font-manufacturing">
-				Edit Order of Battle
-			</p>
-			<p className="text-lg text-gray-400">
-				This page is under construction. Please check back later.
-			</p>
-			<div>
-				<h1>Edit List: {id}</h1>
-			</div>
-		</div>
-	);
+  const { id } = use(params);
+  const [clickedUnits, setClickedUnits] = useState<Unit[]>([]);
+
+  const handleUnitClick = (unit: Unit) => {
+    setClickedUnits((prev) => [...prev, unit]); // ✅ keeps duplicates
+  };
+
+  return (
+    <div className="place-self-start">
+      <p className="text-5xl mb-4 font-manufacturing">Edit Order of Battle</p>
+
+      <div className="flex flex-row">
+        <UnitPicker factionId="AC" onUnitClick={handleUnitClick} />
+        <OrderOfBattleBuilder selectedUnits={clickedUnits} />
+      </div>
+    </div>
+  );
 }
